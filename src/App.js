@@ -1,12 +1,13 @@
 const { app, BrowserWindow } = require('electron/main')
-const path = require('node:path')
-
+const path = require('node:path');
+const MessageCenter = require('./MessageCenter').getInstance();
 class App {
     constructor() {
         if (App.instance) {
             return App.instance;
         }
         App.instance = this;
+        
     }
 
     createWindow() {
@@ -14,10 +15,9 @@ class App {
             width: 800,
             height: 600,
             webPreferences: {
-                // preload: path.join(__dirname, 'preload.js')
+                preload: path.join(__dirname, 'preload.js')
             }
         })
-
         win.loadFile('./src/public/index.html')
         win.removeMenu(); // 移除默认的功能菜单
 
@@ -30,7 +30,6 @@ class App {
 
     start() {
         const gotTheLock = app.requestSingleInstanceLock();
-
         if (!gotTheLock) {
             app.quit();
         } else {

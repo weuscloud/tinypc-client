@@ -14,6 +14,24 @@ h1 {
     font-size: 3em;
     text-shadow: 0 0 10px #00ffcc;
     animation: neon 1.5s ease-in-out infinite alternate;
+    position: relative;
+}
+
+h1:hover::after {
+    content: attr(title);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 5px;
+    white-space: nowrap;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    font-size: 10px;
 }
 
 @keyframes neon {
@@ -87,9 +105,15 @@ button:hover {
 
 .timer {
     font-size: 2em;
-    margin-bottom: 20px;
     text-shadow: 0 0 10px #ff0000;
     text-align: center;
+}
+
+.timer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .message {
@@ -115,4 +139,31 @@ button:hover {
 
 .new-game:hover {
     background-color: #cc0000;
+}
+
+.status-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.difficulty-bar {
+    width: 100px;
+    height: 20px;
+    background-color: lightgray;
+    border-radius: 10px;
+    margin: 0 10px;
+    position: relative;
+}
+
+.difficulty {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s;
+}
+
+.difficulty-level {
+    font-size: 1em;
+    margin-left: 10px;
 }

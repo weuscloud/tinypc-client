@@ -7,14 +7,24 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <h1 id="game-title" title="使用下方四个数字和基本运算符（+、-、*、/）使结果等于24。">赛博风格24点游戏</h1>
     <div class="container">
-        <h1>赛博风格24点游戏</h1>
         <div id="numbers" class="cards"></div>
         <div class="input-container">
-            <input type="text" id="expression" placeholder="输入你的表达式" />
+            <input type="text" id="expression" placeholder="输入表达式" />
             <button id="submit">提交</button>
         </div>
-        <div id="timer" class="timer">30</div>
+        <div class="status-container">
+            <span>难度:</span>
+            <div class="difficulty-bar">
+                <div id="difficulty" class="difficulty"></div>
+            </div>
+            <span id="difficulty-level" class="difficulty-level">一般</span>
+        </div>
+        <div class="timer-container">
+            <span>作答时间剩余:</span>
+            <div id="timer" class="timer">30</div>
+        </div>
         <div id="message" class="message"></div>
         <button id="new-game" class="new-game" style="display: none;">新游戏</button>
     </div>

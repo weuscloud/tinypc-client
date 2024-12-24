@@ -5,11 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const timerDisplay = document.getElementById('timer');
     const messageDisplay = document.getElementById('message');
     const newGameButton = document.getElementById('new-game');
+    const difficultyDisplay = document.getElementById('difficulty');
+    const difficultyLevelDisplay = document.getElementById('difficulty-level');
+    const difficultyBar = document.querySelector('.difficulty-bar');
 
     let numbers = [];
     let timer;
     let timeLimit = 30;
     let solution = '';
+    let difficulty = '一般'; // 默认难度
 
     function generateNumbers() {
         while (true) {
@@ -18,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (solution) break;
         }
         displayNumbers();
+        setDifficulty('随机'); // 确保在生成新数字时设置难度
     }
 
     function displayNumbers() {
@@ -36,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timerDisplay.textContent = timeLimit;
             if (timeLimit <= 0) {
                 clearInterval(timer);
-                showMessage('时间到！丢鸡蛋！正确答案是：' + solution);
+                showMessage('时间到！你被鸡蛋砸到了！正确答案是：' + solution);
             }
         }, 1000);
     }
@@ -55,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result === 24) {
                 showMessage('恭喜你，答案正确！');
             } else {
-                showMessage('答案错误，请再试一次。正确答案是：' + solution);
+                showMessage('回答错误！你被鸡蛋砸到了！正确答案是：' + solution);
             }
         } catch (error) {
             showMessage('输入无效，请检查你的表达式。');
@@ -132,6 +137,51 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch {
             return null;
         }
+    }
+
+    function setDifficulty(level) {
+        if (level === '随机') {
+            let multiplicationOrDivisionCount = (solution.match(/[*\/]/g) || []).length;
+
+            if (multiplicationOrDivisionCount >= 3) {
+                difficulty = '最难';
+                difficultyDisplay.style.width = '100%';
+                difficultyDisplay.style.backgroundColor = 'red';
+            } else if (multiplicationOrDivisionCount == 2) {
+                difficulty = '中等';
+                difficultyDisplay.style.width = '66%';
+                difficultyDisplay.style.backgroundColor = 'yellow';
+            } else if (multiplicationOrDivisionCount == 1) {
+                difficulty = '一般';
+                difficultyDisplay.style.width = '33%';
+                difficultyDisplay.style.backgroundColor = 'green';
+            } else {
+                difficulty = '最简单';
+                difficultyDisplay.style.width = '0%';
+                difficultyDisplay.style.backgroundColor = 'white';
+            }
+        } else {
+            difficulty = level;
+            switch (level) {
+                case '最难':
+                    difficultyDisplay.style.width = '100%';
+                    difficultyDisplay.style.backgroundColor = 'red';
+                    break;
+                case '中等':
+                    difficultyDisplay.style.width = '66%';
+                    difficultyDisplay.style.backgroundColor = 'yellow';
+                    break;
+                case '一般':
+                    difficultyDisplay.style.width = '33%';
+                    difficultyDisplay.style.backgroundColor = 'green';
+                    break;
+                case '最简单':
+                    difficultyDisplay.style.width = '0%';
+                    difficultyDisplay.style.backgroundColor = 'white';
+                    break;
+            }
+        }
+        difficultyLevelDisplay.textContent = difficulty;
     }
 
     submitButton.addEventListener('click', checkExpression);
