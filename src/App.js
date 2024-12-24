@@ -12,13 +12,13 @@ class App {
 
     createWindow() {
         const win = new BrowserWindow({
-            width: 800,
+            width: 820,
             height: 600,
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js')
             }
         })
-        win.loadFile('./src/public/index.html')
+        win.loadFile('./src/public/Game.html')
         win.removeMenu(); // 移除默认的功能菜单
 
         win.webContents.on('before-input-event', (event, input) => {

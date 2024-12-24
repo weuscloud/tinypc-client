@@ -1,0 +1,114 @@
+/* 全局变量定义 */
+:root {
+    --bg-color: #111;
+    --primary-color: #00ffcc;
+    --secondary-color: #222;
+    --hover-color: #00cc99;
+    --error-color: #ff0000;
+    --font-family: 'Courier New', Courier, monospace;
+    --text-shadow-color: rgba(0, 255, 204, 0.7);
+    --box-shadow-color: rgba(0, 255, 204, 0.3);
+}
+
+/* 通用样式 */
+body {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    font-family: var(--font-family);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+h1 {
+    font-size: 3.5em;
+    text-shadow: 0 0 15px var(--text-shadow-color);
+    animation: neon 2s ease-in-out infinite alternate;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+@keyframes neon {
+    from {
+        text-shadow: 0 0 10px var(--text-shadow-color), 0 0 20px var(--text-shadow-color);
+    }
+    to {
+        text-shadow: 0 0 30px var(--text-shadow-color), 0 0 40px var(--text-shadow-color);
+    }
+}
+
+/* 设置界面样式 */
+.settings {
+    margin-bottom: 30px;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.slider-container label {
+    margin-right: 15px;
+    width: 150px; /* 保持标签宽度一致 */
+    text-align: left; /* 文本左对齐 */
+}
+
+.slider-container input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 200px; /* 确保滑块宽度一致 */
+    height: 10px;
+    background: var(--secondary-color);
+    outline: none;
+    border-radius: 5px;
+    box-shadow: 0 0 10px var(--box-shadow-color);
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* 按钮样式 */
+.new-game {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--hover-color);
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px var(--box-shadow-color);
+}
+
+.new-game:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+}
+
+/* 动画效果 */
+.fade-out {
+    animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}

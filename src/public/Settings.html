@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Start Screen</title>
+    <link rel="stylesheet" href="Settings.css" />
+</head>
+
+<body>
+
+    <div class="start-screen">
+        <h1>设置</h1>
+        <div class="settings">
+            <div class="slider-container">
+                <label for="cardCount">卡牌数量:</label>
+                <input type="range" id="cardCount" min="3" max="7" value="4" />
+                <span id="cardCountValue">4</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="maxNumber">最大数字范围:</label>
+                <input type="range" id="maxNumber" min="10" max="99" value="10" />
+                <span id="maxNumberValue">10</span>
+            </div>
+        </div>
+
+        <button id="startGame" class="new-game">开始游戏</button>
+    </div>
+
+    <script>
+        // 更新滑块数值
+        const cardCountSlider = document.getElementById('cardCount');
+        const cardCountValue = document.getElementById('cardCountValue');
+        const maxNumberSlider = document.getElementById('maxNumber');
+        const maxNumberValue = document.getElementById('maxNumberValue');
+
+        cardCountSlider.addEventListener('input', () => {
+            cardCountValue.textContent = cardCountSlider.value;
+        });
+
+        maxNumberSlider.addEventListener('input', () => {
+            maxNumberValue.textContent = maxNumberSlider.value;
+        });
+
+
+        document.getElementById('startGame').addEventListener('click', () => {
+            const cardCount = document.getElementById('cardCount').value;
+            const maxNumber = document.getElementById('maxNumber').value;
+
+            // 将数据存入 localStorage
+            localStorage.setItem('cardCount', cardCount);
+            localStorage.setItem('maxNumber', maxNumber);
+
+            document.body.classList.add('fade-out'); // 添加滑动消失效果
+            setTimeout(() => {
+                window.location.href = 'game.html'; // 跳转到游戏页面
+            }, 500); // 动画完成后跳转
+        });
+
+    </script>
+</body>
+
+</html>

@@ -3,8 +3,8 @@ class GameModel {
         this.numbers = [];
         this.solution = '';
         this.difficulty = 0;
-        this.cardCount = 7;  // 默认生成5张卡牌3-7
-        this.maxNumber = 60;// 最大数值0-50
+        this.cardCount =localStorage.getItem('cardCount') || 4;  // 默认生成4张卡牌3-7
+        this.maxNumber = localStorage.getItem('maxNumber') || 10;// 最大数值0-99
         this.finalResult = 24;// 目标结果24
         this.evalCount = 0; // 记录评估次数
     }

@@ -83,7 +83,6 @@ h1:hover::after {
     transform: scale(1.15);
 }
 
-/* 输入和按钮样式 */
 .input-container,
 .timer-container,
 .status-container,
@@ -92,6 +91,7 @@ h1:hover::after {
     justify-content: center;
     align-items: center;
     margin-bottom: 25px; /* 统一间距 */
+    z-index: 10; /* 增加层级 */
 }
 
 input[type="text"] {
@@ -166,7 +166,7 @@ button:hover {
     margin-left: 15px;
 }
 
-/* 新游戏按钮 */
+/* 新游戏按钮样式合并 */
 .new-game {
     padding: 12px 25px;
     border: none;
@@ -174,11 +174,122 @@ button:hover {
     background-color: var(--hover-color);
     font-size: 1.2em;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* 增加过渡效果 */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px var(--box-shadow-color);
     margin: 0 15px;
 }
 
 .new-game:hover {
     background-color: #cc0000;
-    transform: scale(1.05); /* 增加悬停时的缩放效果 */
+    transform: scale(1.05);
+}
+
+/* 设置界面样式 */
+.settings {
+    margin-bottom: 30px;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.slider-container label {
+    margin-right: 15px;
+    width: 150px; /* 保持标签宽度一致 */
+    text-align: left; /* 文本左对齐 */
+}
+
+.slider-container input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 200px; /* 确保滑块宽度一致 */
+    height: 10px;
+    background: var(--secondary-color);
+    outline: none;
+    border-radius: 5px;
+    box-shadow: 0 0 10px var(--box-shadow-color);
+}
+
+.slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* 菜单按钮样式 */
+.menu-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 100; /* 增加层级 */
+}
+
+.menu-button span {
+    display: block;
+    width: 30px;
+    height: 4px;
+    background-color: var(--primary-color);
+    box-shadow: 0 0 5px var(--text-shadow-color);
+    transition: transform 0.3s ease;
+}
+
+.menu-button:hover span {
+    background-color: var(--hover-color);
+}
+
+/* 菜单按钮悬停动画 */
+.menu-button:hover span:nth-child(1) {
+    transform: translateY(5px);
+}
+
+.menu-button:hover span:nth-child(3) {
+    transform: translateY(-5px);
+}
+
+/* 媒体查询，适应不同屏幕尺寸 */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2.5em;
+    }
+
+  .card {
+        width: 60px;
+        height: 60px;
+        font-size: 2em;
+    }
+
+    input[type="text"] {
+        width: 200px;
+    }
+
+  .slider-container label {
+        width: 100px;
+        font-size: 1em;
+    }
+
+  .slider-container input[type="range"] {
+        width: 150px;
+    }
+}
+.result-container {
+    position: relative;
+    bottom: -200px; /* 初始位置在底部以下 */
+    opacity: 0; /* 初始透明度为0 */
+    transition: bottom 0.5s ease, opacity 0.5s ease; /* 过渡效果 */
+}
+
+.result-container.show {
+    bottom: 0; /* 移动到正常位置 */
+    opacity: 1; /* 完全显示 */
 }
