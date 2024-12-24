@@ -8,14 +8,16 @@ class GameModel {
 
     generateNumbers() {
         while (true) {
-            this.numbers = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10) + 1);
+            this.numbers = Array.from({ length: 4 }, () => Math.floor(Math.random() * 20) + 1);
             this.solution = this.findSolution(this.numbers);
             if (this.solution) break;
         }
         this.setDifficulty('随机');
         return this.numbers;
     }
-
+    getAnswer(){
+        return this.solution;
+    }
     findSolution(nums) {
         const operators = ['+', '-', '*', '/'];
         const permutations = this.getPermutations(nums);
