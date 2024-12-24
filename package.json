@@ -1,16 +1,14 @@
 {
   "name": "tinypc-client",
-  "version": "1.0.8",
+  "version": "1.0.6",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-packager . tinypc-client --platform=win32 --arch=x64 --out=dist --overwrite"
+    "start": "electron ."
   },
   "repository": "git@github.com:weuscloud/tinypc-client.git",
   "author": "wqicheng <weuscloud@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^33.2.1",
-    "electron-packager": "^17.1.2"
+    "electron": "^33.2.1"
   }
 }

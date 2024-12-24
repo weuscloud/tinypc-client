@@ -2,7 +2,7 @@ class GameController {
     constructor() {
         this.model = new GameModel();
         this.view = new GameView();
-        this.timeLimit = localStorage.getItem('timeLimit') || 30;
+        this.timeLimit = 30;
         this.init();
     }
 
@@ -19,7 +19,7 @@ class GameController {
     }
     retryGame() {
         clearInterval(this.view.timer);
-        this.timeLimit = localStorage.getItem('timeLimit') || 30;;
+        this.timeLimit = 30;
         this.view.timerDisplay.textContent = this.timeLimit;
         this.view.clearInput();
         this.view.clearMessage();
