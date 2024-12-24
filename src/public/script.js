@@ -1,91 +1,102 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const numbersContainer = document.getElementById('numbers');
-    const expressionInput = document.getElementById('expression');
-    const submitButton = document.getElementById('submit');
-    const timerDisplay = document.getElementById('timer');
-    const messageDisplay = document.getElementById('message');
-    const newGameButton = document.getElementById('new-game');
-    const difficultyDisplay = document.getElementById('difficulty');
-    const difficultyLevelDisplay = document.getElementById('difficulty-level');
-    const difficultyBar = document.querySelector('.difficulty-bar');
+// gameClass.js
+class Game {
+    constructor() {
+        this.numbersContainer = document.getElementById('numbers');
+        this.expressionInput = document.getElementById('expression');
+        this.submitButton = document.getElementById('submit');
+        this.timerDisplay = document.getElementById('timer');
+        this.messageDisplay = document.getElementById('message');
+        this.newGameButton = document.getElementById('new-game');
+        this.difficultyDisplay = document.getElementById('difficulty');
+        this.difficultyLevelDisplay = document.getElementById('difficulty-level');
+        this.difficultyBar = document.querySelector('.difficulty-bar');
 
-    let numbers = [];
-    let timer;
-    let timeLimit = 30;
-    let solution = '';
-    let difficulty = '一般'; // 默认难度
+        this.numbers = [];
+        this.timer;
+        this.timeLimit = 30;
+        this.solution = '';
+        this.difficulty = '一般'; // 默认难度
 
-    function generateNumbers() {
-        while (true) {
-            numbers = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10) + 1);
-            solution = findSolution(numbers);
-            if (solution) break;
-        }
-        displayNumbers();
-        setDifficulty('随机'); // 确保在生成新数字时设置难度
+        this.init();
     }
 
-    function displayNumbers() {
-        numbersContainer.innerHTML = '';
-        numbers.forEach(num => {
+    init() {
+        this.submitButton.addEventListener('click', this.checkExpression.bind(this));
+        this.newGameButton.addEventListener('click', this.startNewGame.bind(this));
+        this.startGame();
+    }
+
+    generateNumbers() {
+        while (true) {
+            this.numbers = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10) + 1);
+            this.solution = this.findSolution(this.numbers);
+            if (this.solution) break;
+        }
+        this.displayNumbers();
+        this.setDifficulty('随机'); // 确保在生成新数字时设置难度
+    }
+
+    displayNumbers() {
+        this.numbersContainer.innerHTML = '';
+        this.numbers.forEach(num => {
             const card = document.createElement('div');
             card.className = 'card';
             card.textContent = num;
-            numbersContainer.appendChild(card);
+            this.numbersContainer.appendChild(card);
         });
     }
 
-    function startTimer() {
-        timer = setInterval(() => {
-            timeLimit--;
-            timerDisplay.textContent = timeLimit;
-            if (timeLimit <= 0) {
-                clearInterval(timer);
-                showMessage('时间到！你被鸡蛋砸到了！正确答案是：' + solution);
+    startTimer() {
+        this.timer = setInterval(() => {
+            this.timeLimit--;
+            this.timerDisplay.textContent = this.timeLimit;
+            if (this.timeLimit <= 0) {
+                clearInterval(this.timer);
+                this.showMessage('时间到！你被鸡蛋砸到了！正确答案是：' + this.solution);
             }
         }, 1000);
     }
 
-    function showMessage(message) {
-        clearInterval(timer); // 停止倒计时
-        messageDisplay.textContent = message;
-        messageDisplay.classList.add('show');
-        newGameButton.style.display = 'block';
+    showMessage(message) {
+        clearInterval(this.timer); // 停止倒计时
+        this.messageDisplay.textContent = message;
+        this.messageDisplay.classList.add('show');
+        this.newGameButton.style.display = 'block';
     }
 
-    function checkExpression() {
-        const userExpression = expressionInput.value;
+    checkExpression() {
+        const userExpression = this.expressionInput.value;
         try {
             const result = eval(userExpression);
             if (result === 24) {
-                showMessage('恭喜你，答案正确！');
+                this.showMessage('恭喜你，答案正确！');
             } else {
-                showMessage('回答错误！你被鸡蛋砸到了！正确答案是：' + solution);
+                this.showMessage('回答错误！你被鸡蛋砸到了！正确答案是：' + this.solution);
             }
         } catch (error) {
-            showMessage('输入无效，请检查你的表达式。');
+            this.showMessage('输入无效，请检查你的表达式。');
         }
     }
 
-    function startNewGame() {
-        clearInterval(timer);
-        timeLimit = 30;
-        timerDisplay.textContent = timeLimit;
-        expressionInput.value = '';
-        messageDisplay.textContent = '';
-        newGameButton.style.display = 'none';
-        generateNumbers();
-        startTimer();
+    startNewGame() {
+        clearInterval(this.timer);
+        this.timeLimit = 30;
+        this.timerDisplay.textContent = this.timeLimit;
+        this.expressionInput.value = '';
+        this.messageDisplay.textContent = '';
+        this.newGameButton.style.display = 'none';
+        this.generateNumbers();
+        this.startTimer();
     }
 
-    function findSolution(nums) {
+    findSolution(nums) {
         const operators = ['+', '-', '*', '/'];
-        const permutations = getPermutations(nums);
+        const permutations = this.getPermutations(nums);
         for (const numPermutation of permutations) {
-            for (const ops of getOperatorCombinations(operators)) {
-                const expressions = generateExpressions(numPermutation, ops);
+            for (const ops of this.getOperatorCombinations(operators)) {
+                const expressions = this.generateExpressions(numPermutation, ops);
                 for (const expr of expressions) {
-                    if (evalExpression(expr) === 24) {
+                    if (this.evalExpression(expr) === 24) {
                         return expr;
                     }
                 }
@@ -94,22 +105,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    function getPermutations(arr) {
+    getPermutations(arr) {
         if (arr.length === 0) return [[]];
         const first = arr[0];
         const rest = arr.slice(1);
-        const permsWithoutFirst = getPermutations(rest);
+        const permsWithoutFirst = this.getPermutations(rest);
         const allPermutations = [];
         permsWithoutFirst.forEach(perm => {
             for (let i = 0; i <= perm.length; i++) {
-                const permWithFirst = [...perm.slice(0, i), first, ...perm.slice(i)];
+                const permWithFirst = [...perm.slice(0, i), first,...perm.slice(i)];
                 allPermutations.push(permWithFirst);
             }
         });
         return allPermutations;
     }
 
-    function getOperatorCombinations(operators) {
+    getOperatorCombinations(operators) {
         const result = [];
         for (const op1 of operators) {
             for (const op2 of operators) {
@@ -121,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return result;
     }
 
-    function generateExpressions(nums, ops) {
+    generateExpressions(nums, ops) {
         return [
             `(${nums[0]}${ops[0]}${nums[1]})${ops[1]}(${nums[2]}${ops[2]}${nums[3]})`,
             `(${nums[0]}${ops[0]}(${nums[1]}${ops[1]}${nums[2]}))${ops[2]}${nums[3]}`,
@@ -131,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
     }
 
-    function evalExpression(expr) {
+    evalExpression(expr) {
         try {
             return eval(expr);
         } catch {
@@ -139,54 +150,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function setDifficulty(level) {
+    setDifficulty(level) {
         if (level === '随机') {
-            let multiplicationOrDivisionCount = (solution.match(/[*\/]/g) || []).length;
+            let multiplicationOrDivisionCount = (this.solution.match(/[*\/]/g) || []).length;
 
             if (multiplicationOrDivisionCount >= 3) {
-                difficulty = '最难';
-                difficultyDisplay.style.width = '100%';
-                difficultyDisplay.style.backgroundColor = 'red';
+                this.difficulty = '最难';
+                this.difficultyDisplay.style.width = '100%';
+                this.difficultyDisplay.style.backgroundColor = 'red';
             } else if (multiplicationOrDivisionCount == 2) {
-                difficulty = '中等';
-                difficultyDisplay.style.width = '66%';
-                difficultyDisplay.style.backgroundColor = 'yellow';
+                this.difficulty = '中等';
+                this.difficultyDisplay.style.width = '66%';
+                this.difficultyDisplay.style.backgroundColor = 'yellow';
             } else if (multiplicationOrDivisionCount == 1) {
-                difficulty = '一般';
-                difficultyDisplay.style.width = '33%';
-                difficultyDisplay.style.backgroundColor = 'green';
+                this.difficulty = '一般';
+                this.difficultyDisplay.style.width = '33%';
+                this.difficultyDisplay.style.backgroundColor = 'green';
             } else {
-                difficulty = '最简单';
-                difficultyDisplay.style.width = '0%';
-                difficultyDisplay.style.backgroundColor = 'white';
+                this.difficulty = '最简单';
+                this.difficultyDisplay.style.width = '0%';
+                this.difficultyDisplay.style.backgroundColor = 'white';
             }
         } else {
-            difficulty = level;
+            this.difficulty = level;
             switch (level) {
                 case '最难':
-                    difficultyDisplay.style.width = '100%';
-                    difficultyDisplay.style.backgroundColor = 'red';
+                    this.difficultyDisplay.style.width = '100%';
+                    this.difficultyDisplay.style.backgroundColor = 'red';
                     break;
                 case '中等':
-                    difficultyDisplay.style.width = '66%';
-                    difficultyDisplay.style.backgroundColor = 'yellow';
+                    this.difficultyDisplay.style.width = '66%';
+                    this.difficultyDisplay.style.backgroundColor = 'yellow';
                     break;
                 case '一般':
-                    difficultyDisplay.style.width = '33%';
-                    difficultyDisplay.style.backgroundColor = 'green';
+                    this.difficultyDisplay.style.width = '33%';
+                    this.difficultyDisplay.style.backgroundColor = 'green';
                     break;
                 case '最简单':
-                    difficultyDisplay.style.width = '0%';
-                    difficultyDisplay.style.backgroundColor = 'white';
+                    this.difficultyDisplay.style.width = '0%';
+                    this.difficultyDisplay.style.backgroundColor = 'white';
                     break;
             }
         }
-        difficultyLevelDisplay.textContent = difficulty;
+        this.difficultyLevelDisplay.textContent = this.difficulty;
     }
 
-    submitButton.addEventListener('click', checkExpression);
-    newGameButton.addEventListener('click', startNewGame);
+    startGame() {
+        this.generateNumbers();
+        this.startTimer();
+    }
+}
 
-    generateNumbers();
-    startTimer();
+document.addEventListener('DOMContentLoaded', () => {
+    new Game();
 });
