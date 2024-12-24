@@ -129,7 +129,7 @@ fi
 
 if [[ "$tagConfirm" =~ ^[Yy]?$ ]]; then
     # 执行 git tag
-    git tag -a "v$newVersion" -m "Version $newVersion"
+    git tag -a "v$newVersion" -m "$commitMessage"
     if [[ $? -eq 0 ]]; then
         echo -e "${GREEN}git tag 操作成功。${NC}"
     else
