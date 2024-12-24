@@ -45,7 +45,11 @@ h1 {
 .settings {
     margin-bottom: 30px;
 }
-
+.span-width {
+    display: inline-block;
+    width: 36px; /* 设置宽度为 36 */
+    text-align: center; /* 文本居中 */
+}
 .slider-container {
     display: flex;
     align-items: center;
@@ -111,4 +115,43 @@ h1 {
         opacity: 0;
         transform: translateY(-20px);
     }
+}
+.start-screen{
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px var(--box-shadow-color);
+}
+
+/* 菜单按钮样式 */
+.menu-button {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    z-index: 100; /* 增加层级 */
+}
+
+.menu-button span {
+    display: block;
+    width: 30px;
+    height: 4px;
+    background-color: var(--primary-color);
+    box-shadow: 0 0 5px var(--text-shadow-color);
+    transition: transform 0.3s ease;
+}
+
+.menu-button:hover span {
+    background-color: var(--hover-color);
+}
+
+/* 菜单按钮悬停动画 */
+.menu-button:hover span:nth-child(1) {
+    transform: translateY(5px);
+}
+
+.menu-button:hover span:nth-child(3) {
+    transform: translateY(-5px);
 }
