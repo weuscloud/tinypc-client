@@ -12,6 +12,25 @@ class GameView {
 
         this.retryButton = document.getElementById('retry');
         this.answerButton = document.getElementById('answer');
+
+        this.difficultyColors = {
+            0: 'white',
+            1: 'gray',
+            2: 'green',
+            3: 'blue',
+            4: 'purple',
+            5: 'orange',
+            6: 'red'
+        };
+        this.difficultyLevels = {
+            0: '青铜',
+            1: '白银',
+            2: '黄金',
+            3: '铂金',
+            4: '钻石',
+            5: '星耀',
+            6: '王者'
+        };
     }
 
     displayNumbers(numbers) {
@@ -46,25 +65,11 @@ class GameView {
     }
 
     updateDifficultyDisplay(difficulty) {
-        this.difficultyLevelDisplay.textContent = difficulty;
-        switch (difficulty) {
-            case '最难':
-                this.difficultyDisplay.style.width = '100%';
-                this.difficultyDisplay.style.backgroundColor = 'red';
-                break;
-            case '中等':
-                this.difficultyDisplay.style.width = '66%';
-                this.difficultyDisplay.style.backgroundColor = 'yellow';
-                break;
-            case '一般':
-                this.difficultyDisplay.style.width = '33%';
-                this.difficultyDisplay.style.backgroundColor = 'green';
-                break;
-            case '最简单':
-                this.difficultyDisplay.style.width = '0%';
-                this.difficultyDisplay.style.backgroundColor = 'white';
-                break;
-        }
+
+        this.difficultyDisplay.style.width = `${(difficulty + 1) * 100 / 7}%`;
+        this.difficultyDisplay.style.backgroundColor = this.difficultyColors[difficulty];
+        this.difficultyLevelDisplay.textContent =this.difficultyLevels[difficulty];
+        this.difficultyLevelDisplay.style.color = this.difficultyColors[difficulty];
     }
 
     clearInput() {

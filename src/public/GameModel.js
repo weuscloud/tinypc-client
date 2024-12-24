@@ -1,31 +1,45 @@
-// model.js
 class GameModel {
     constructor() {
         this.numbers = [];
         this.solution = '';
-        this.difficulty = '一般';
+        this.difficulty = 0;
+        this.cardCount = 7;  // 默认生成5张卡牌3-7
+        this.maxNumber = 60;// 最大数值0-50
+        this.finalResult = 24;// 目标结果24
+        this.evalCount = 0; // 记录评估次数
+    }
+
+    setCardCount(count) {
+        if (count < 3 || count > 10) {
+            throw new Error('卡牌数量必须在3到10之间');
+        }
+        this.cardCount = count;
     }
 
     generateNumbers() {
         while (true) {
-            this.numbers = Array.from({ length: 4 }, () => Math.floor(Math.random() * 20) + 1);
+            this.numbers = Array.from({ length: this.cardCount }, () => Math.floor(Math.random() * this.maxNumber) + 1);
             this.solution = this.findSolution(this.numbers);
             if (this.solution) break;
         }
-        this.setDifficulty('随机');
+        this.setDifficulty();
         return this.numbers;
     }
-    getAnswer(){
+
+    getAnswer() {
         return this.solution;
     }
+
     findSolution(nums) {
         const operators = ['+', '-', '*', '/'];
         const permutations = this.getPermutations(nums);
+        this.evalCount = 0; // 重置评估计数
+
         for (const numPermutation of permutations) {
-            for (const ops of this.getOperatorCombinations(operators)) {
+            for (const ops of this.getOperatorCombinations(operators, numPermutation.length - 1)) {
                 const expressions = this.generateExpressions(numPermutation, ops);
                 for (const expr of expressions) {
-                    if (this.evalExpression(expr) === 24) {
+                    if (this.safeEval(expr) === this.finalResult) {
                         return expr;
                     }
                 }
@@ -42,59 +56,58 @@ class GameModel {
         const allPermutations = [];
         permsWithoutFirst.forEach(perm => {
             for (let i = 0; i <= perm.length; i++) {
-                const permWithFirst = [...perm.slice(0, i), first,...perm.slice(i)];
+                const permWithFirst = [...perm.slice(0, i), first, ...perm.slice(i)];
                 allPermutations.push(permWithFirst);
             }
         });
         return allPermutations;
     }
 
-    getOperatorCombinations(operators) {
+    getOperatorCombinations(operators, opCount) {
         const result = [];
-        for (const op1 of operators) {
-            for (const op2 of operators) {
-                for (const op3 of operators) {
-                    result.push([op1, op2, op3]);
-                }
+        function generateCombinations(current = [], depth = 0) {
+            if (depth === opCount) {
+                result.push([...current]);
+                return;
+            }
+            for (const operator of operators) {
+                generateCombinations([...current, operator], depth + 1);
             }
         }
+        generateCombinations([], 0);
         return result;
     }
 
     generateExpressions(nums, ops) {
-        return [
-            `(${nums[0]}${ops[0]}${nums[1]})${ops[1]}(${nums[2]}${ops[2]}${nums[3]})`,
-            `(${nums[0]}${ops[0]}(${nums[1]}${ops[1]}${nums[2]}))${ops[2]}${nums[3]}`,
-            `(${nums[0]}${ops[0]}${nums[1]})${ops[1]}${nums[2]}${ops[2]}${nums[3]}`,
-            `${nums[0]}${ops[0]}(${nums[1]}${ops[1]}(${nums[2]}${ops[2]}${nums[3]}))`,
-            `${nums[0]}${ops[0]}((${nums[1]}${ops[1]}${nums[2]})${ops[2]}${nums[3]})`
-        ];
+        const exprs = [];
+        let expr = nums[0].toString();
+        for (let i = 0; i < ops.length; i++) {
+            expr = `(${expr}${ops[i]}${nums[i + 1]})`;
+        }
+        exprs.push(expr);
+        return exprs;
     }
 
-    evalExpression(expr) {
+    safeEval(expr) {
         try {
-            return eval(expr);
+            this.evalCount++; // 增加评估次数
+            const result = eval(expr);
+            return Math.abs(result - this.finalResult) < 0.0001 ? result : null;
         } catch {
             return null;
         }
     }
 
-    setDifficulty(level) {
-        if (level === '随机') {
-            let multiplicationOrDivisionCount = (this.solution.match(/[*\/]/g) || []).length;
+    setDifficulty() {
+        const multiplications = (this.solution.match(/[*]/g) || []).length;
+        const divisions = (this.solution.match(/[/]/g) || []).length;
+        const parentheses = (this.solution.match(/[()]/g) || []).length / 2;
 
-            if (multiplicationOrDivisionCount >= 3) {
-                this.difficulty = '最难';
-            } else if (multiplicationOrDivisionCount == 2) {
-                this.difficulty = '中等';
-            } else if (multiplicationOrDivisionCount == 1) {
-                this.difficulty = '一般';
-            } else {
-                this.difficulty = '最简单';
-            }
-        } else {
-            this.difficulty = level;
-        }
+        // 动态难度评分基于评估次数
+        const evalScore = Math.log10(this.evalCount + 1) * 10;
+        const complexityScore = multiplications * 2 + divisions * 3 + parentheses * 1.5;
+        this.difficulty = Math.round(evalScore + complexityScore);
+        this.difficulty =parseInt(this.difficulty/10);
         return this.difficulty;
     }
 }

@@ -1,177 +1,184 @@
+/* 全局变量定义 */
+:root {
+    --bg-color: #111;
+    --primary-color: #00ffcc;
+    --secondary-color: #222;
+    --hover-color: #00cc99;
+    --error-color: #ff0000;
+    --font-family: 'Courier New', Courier, monospace;
+    --text-shadow-color: rgba(0, 255, 204, 0.7);
+    --box-shadow-color: rgba(0, 255, 204, 0.3);
+}
+
+/* 通用样式 */
 body {
-    background-color: #1a1a1a;
-    color: #00ffcc;
-    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    font-family: var(--font-family);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     margin: 0;
+    overflow: hidden; /* 防止内容溢出 */
 }
 
 h1 {
-    font-size: 3em;
-    text-shadow: 0 0 10px #00ffcc;
-    animation: neon 1.5s ease-in-out infinite alternate;
+    font-size: 3.5em;
+    text-shadow: 0 0 15px var(--text-shadow-color);
+    animation: neon 2s ease-in-out infinite alternate;
     position: relative;
+    margin-bottom: 30px; /* 增加与下方元素的间距 */
 }
 
 h1:hover::after {
     content: attr(title);
     position: absolute;
-    top: 100%;
+    top: 120%;
     left: 50%;
     transform: translateX(-50%);
     background-color: #333;
     color: #fff;
-    margin: 5px 0;
-    padding: 5px;
-    border-radius: 5px;
-    white-space: nowrap;
+    padding: 8px 12px;
+    border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 10;
-    font-size: 10px;
+    font-size: 14px;
+    white-space: nowrap;
 }
 
 @keyframes neon {
     from {
-        text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc, 0 0 15px #00ffcc, 0 0 20px #00ffcc, 0 0 25px #00ffcc, 0 0 30px #00ffcc, 0 0 35px #00ffcc;
+        text-shadow: 0 0 10px var(--text-shadow-color), 0 0 20px var(--text-shadow-color);
     }
     to {
-        text-shadow: 0 0 10px #00ffcc, 0 0 15px #00ffcc, 0 0 20px #00ffcc, 0 0 25px #00ffcc, 0 0 30px #00ffcc, 0 0 35px #00ffcc, 0 0 40px #00ffcc;
+        text-shadow: 0 0 30px var(--text-shadow-color), 0 0 40px var(--text-shadow-color);
     }
 }
 
+/* 卡片容器样式 */
 .cards {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px; /* 增加与下方元素的间距 */
 }
 
 .card {
-    background-color: #2a2a2a;
-    border-radius: 15px;
-    width: 60px;
-    height: 60px;
+    background-color: var(--secondary-color);
+    border-radius: 20px;
+    width: 80px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 10px;
-    font-size: 2em;
-    color: #00ffcc;
-    box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
-    transition: transform 0.2s;
+    margin: 0 15px;
+    font-size: 2.5em;
+    color: var(--primary-color);
+    box-shadow: 0 0 15px var(--box-shadow-color);
+    transition: transform 0.3s ease;
 }
 
 .card:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
-.input-container {
+/* 输入和按钮样式 */
+.input-container,
+.timer-container,
+.status-container,
+.button-group {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* 统一间距 */
 }
 
 input[type="text"] {
-    width: 200px;
-    padding: 10px;
+    width: 290px;
+    padding: 12px;
     border: none;
-    border-radius: 5px;
-    margin: 0;
-    font-size: 1em;
-    background-color: #2a2a2a;
-    color: #00ffcc;
-    box-shadow: 0 0 5px rgba(0, 255, 204, 0.5);
-    margin-right: 10px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 10px var(--box-shadow-color);
+    transition: box-shadow 0.3s ease; /* 增加过渡效果 */
+}
+
+input[type="text"]:focus {
+    box-shadow: 0 0 20px var(--hover-color); /* 聚焦时的效果 */
 }
 
 button {
-    padding: 10px 20px;
+    padding: 12px 25px;
     border: none;
-    border-radius: 5px; 
-    background-color: #00ffcc;
-    color: #1a1a1a;
-    font-size: 1em;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    font-size: 1.2em;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* 增加过渡效果 */
+    box-shadow: 0 0 10px var(--box-shadow-color);
 }
 
 button:hover {
-    background-color: #00cc99;
+    background-color: var(--hover-color);
+    transform: scale(1.05); /* 增加悬停时的缩放效果 */
 }
 
+.button-group button {
+    color: aliceblue;
+}
+
+/* 定时器样式 */
 .timer {
-    font-size: 2em;
-    text-shadow: 0 0 10px #ff0000;
-    text-align: center;
+    font-size: 2.5em;
+    text-shadow: 0 0 15px var(--error-color);
 }
 
-.timer-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
+/* 消息样式 */
 .message {
-    font-size: 1.5em;
-    color: #ff0000;
-    text-shadow: 0 0 10px #ff0000;
+    font-size: 1.8em;
+    color: var(--error-color);
+    text-shadow: 0 0 15px var(--error-color);
     text-align: center;
+    margin-bottom: 20px; /* 增加与下方元素的间距 */
 }
 
-.new-game {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #00cc99;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 20px;
-    display: block;
-    margin: 20px auto 0 auto;
-}
-
-.new-game:hover {
-    background-color: #cc0000;
-}
-
-.status-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
+/* 难度条样式 */
 .difficulty-bar {
-    width: 100px;
-    height: 20px;
+    width: 250px;
+    height: 25px;
     background-color: lightgray;
-    border-radius: 10px;
-    margin: 0 10px;
-    position: relative;
+    border-radius: 15px;
+    margin: 0 15px;
 }
 
 .difficulty {
     height: 100%;
-    border-radius: 10px;
-    transition: width 0.3s;
+    border-radius: 15px;
+    transition: width 0.3s ease;
 }
 
 .difficulty-level {
-    font-size: 1em;
-    margin-left: 10px;
+    font-size: 1.2em;
+    margin-left: 15px;
 }
-.button-group{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    
+
+/* 新游戏按钮 */
+.new-game {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--hover-color);
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* 增加过渡效果 */
+    margin: 0 15px;
 }
-.button-group button{
-    color: aliceblue;
+
+.new-game:hover {
+    background-color: #cc0000;
+    transform: scale(1.05); /* 增加悬停时的缩放效果 */
 }
