@@ -35,10 +35,11 @@ class GameView {
 
     displayNumbers(numbers) {
         this.numbersContainer.innerHTML = '';
-        numbers.forEach(num => {
+        numbers.forEach((num, index) => {
             const card = document.createElement('div');
             card.className = 'card';
             card.textContent = num;
+            card.style.setProperty('--index', index);
             this.numbersContainer.appendChild(card);
         });
     }
@@ -113,16 +114,17 @@ class GameView {
         this.messageDisplay.style.display = 'none'; // 确保消息框隐藏
         this.resetResultContainer();
     }
-    resetResultContainer() {
 
-        this.resultContainer .classList.remove('show');
+    resetResultContainer() {
+        this.resultContainer.classList.remove('show');
         // 确保在重新隐藏后，将其位置和透明度重置
-        this.resultContainer .style.bottom = '-200px';
-        this.resultContainer .style.opacity = 0;
+        this.resultContainer.style.bottom = '-200px';
+        this.resultContainer.style.opacity = 0;
     }
+
     showResultContainer() {
         this.resultContainer.classList.add('show');
-        this.resultContainer .style.bottom = '0';
-        this.resultContainer .style.opacity = 1;
+        this.resultContainer.style.bottom = '0';
+        this.resultContainer.style.opacity = 1;
     }
 }
