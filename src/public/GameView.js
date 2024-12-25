@@ -13,6 +13,8 @@ class GameView {
         this.retryButton = document.getElementById('retry');
         this.answerButton = document.getElementById('answer');
         this.resultContainer = document.querySelector('.result-container');
+        this.menuButton=document.getElementById('menuButton');
+        
         this.difficultyColors = {
             0: '#F0F0F0', // 浅灰色，代表最低难度，给人一种轻松、简单的感觉
             1: '#C0C0C0', // 中等灰色

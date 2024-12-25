@@ -11,6 +11,11 @@ class GameController {
         this.view.newGameButton.addEventListener('click', this.startNewGame.bind(this));
         this.view.retryButton.addEventListener('click', this.retryGame.bind(this));
         this.view.answerButton.addEventListener('click', this.showAnswer.bind(this));
+        
+        // 点击菜单按钮跳转到设置页面
+        this.view.menuButton.addEventListener('click', () => {
+        window.location.href = 'settings.html';
+    });
         this.startGame();
     }
     showAnswer() {
