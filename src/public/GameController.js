@@ -2,7 +2,7 @@ class GameController {
     constructor() {
         this.model = new GameModel();
         this.view = new GameView();
-        this.timeLimit = localStorage.getItem('timeLimit') || 30;
+        this.settingsModel = new SettingsModel();
         this.init();
     }
 
@@ -11,21 +11,18 @@ class GameController {
         this.view.newGameButton.addEventListener('click', this.startNewGame.bind(this));
         this.view.retryButton.addEventListener('click', this.retryGame.bind(this));
         this.view.answerButton.addEventListener('click', this.showAnswer.bind(this));
-        
         // 点击菜单按钮跳转到设置页面
         this.view.menuButton.addEventListener('click', () => {
-        window.location.href = 'settings.html';
-    });
-        this.startGame();
+            window.location.href = 'settings.html';
+        });
+        this.startNewGame();
     }
     showAnswer() {
         const answer = this.model.getAnswer();
         this.view.showMessage(`答案是：${answer}`);
     }
     retryGame() {
-        clearInterval(this.view.timer);
-        this.timeLimit = localStorage.getItem('timeLimit') || 30;;
-        this.view.timerDisplay.textContent = this.timeLimit;
+        this.initTimer();
         this.view.clearInput();
         this.view.clearMessage();
         this.view.hideNewGameButton();
@@ -33,13 +30,23 @@ class GameController {
         this.view.hideRetryButton();
         this.startTimer();
     }
-    startGame() {
+    startNewGame() {
+        //view层的方法
+        this.initTimer();
+        this.view.clearInput();
+        this.view.clearMessage();
+        this.view.hideNewGameButton();
+        this.view.hideAnswerButton();
+        this.view.hideRetryButton();
+
+        //model层的方法
         const numbers = this.model.generateNumbers();
         this.view.displayNumbers(numbers);
-        this.startTimer();
         this.view.updateDifficultyDisplay(this.model.difficulty);
-    }
 
+
+        this.startTimer();
+    }
     startTimer() {
         this.view.timer = setInterval(() => {
             this.timeLimit--;
@@ -65,18 +72,11 @@ class GameController {
         }
     }
 
-    startNewGame() {
+    initTimer() {
         clearInterval(this.view.timer);
-        this.timeLimit = 30;
+        this.timeLimit = this.settingsModel.timeLimit;
         this.view.timerDisplay.textContent = this.timeLimit;
-        this.view.clearInput();
-        this.view.clearMessage();
-        this.view.hideNewGameButton();
-        this.view.hideAnswerButton();
-        this.view.hideRetryButton();
-        this.startGame();
     }
-
 }
 document.addEventListener('DOMContentLoaded', () => {
     new GameController();
