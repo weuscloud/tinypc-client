@@ -3,6 +3,7 @@ class GameController {
         this.model = new GameModel();
         this.view = new GameView();
         this.settingsModel = new SettingsModel();
+        this.loading = new Loading('circle', '生成卡牌中');
         this.init();
     }
 
@@ -15,7 +16,6 @@ class GameController {
         this.view.menuButton.addEventListener('click', () => {
             window.location.href = 'settings.html';
         });
-        this.startNewGame();
     }
     showAnswer() {
         const answer = this.model.getAnswer();
@@ -30,7 +30,8 @@ class GameController {
         this.view.hideRetryButton();
         this.startTimer();
     }
-    startNewGame() {
+    async startNewGame() {
+        this.loading.waitting();
         //view层的方法
         this.initTimer();
         this.view.clearInput();
@@ -38,14 +39,16 @@ class GameController {
         this.view.hideNewGameButton();
         this.view.hideAnswerButton();
         this.view.hideRetryButton();
+       
+        setTimeout(async() => {
+            //model层的方法
+            const numbers = await this.model.generateNumbersAsync()
+            this.view.displayNumbers(numbers);
+            this.view.updateDifficultyDisplay(this.model.difficulty);
+            this.loading.stop();
+            this.startTimer();
+        }, 500);
 
-        //model层的方法
-        const numbers = this.model.generateNumbers();
-        this.view.displayNumbers(numbers);
-        this.view.updateDifficultyDisplay(this.model.difficulty);
-
-
-        this.startTimer();
     }
     startTimer() {
         this.view.timer = setInterval(() => {
@@ -78,6 +81,7 @@ class GameController {
         this.view.timerDisplay.textContent = this.timeLimit;
     }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
-    new GameController();
-});
+    new GameController().startNewGame();
+})

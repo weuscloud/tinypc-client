@@ -12,8 +12,8 @@ class App {
 
     createWindow() {
         const win = new BrowserWindow({
-            width: 860,
-            height: 720,
+            width: 900,
+            height: 800,
             webPreferences: {
                 preload: path.join(__dirname, 'preload.js')
             }

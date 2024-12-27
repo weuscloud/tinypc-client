@@ -4,10 +4,11 @@ class GameModel {
         this.numbers = [];
         this.solution = '';
         this.difficulty = 0;    
-        this.cardCount =this.settingsModel.cardCount; 
+        this.cardCount = this.settingsModel.cardCount; 
         this.maxNumber = this.settingsModel.maxNumber;
         this.finalResult = 24;// 目标结果24
         this.evalCount = 0; // 记录评估次数
+        this.solutionFound = false; // 标记是否找到答案
     }
 
     setCardCount(count) {
@@ -15,6 +16,16 @@ class GameModel {
             throw new Error('卡牌数量必须在3到10之间');
         }
         this.cardCount = count;
+    }
+
+    async generateNumbersAsync() {
+        return new Promise((resolve, reject) => {
+            try {
+                resolve( this.generateNumbers());
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     generateNumbers() {
@@ -25,6 +36,15 @@ class GameModel {
         }
         this.setDifficulty();
         return this.numbers;
+    }
+
+    async findSolutionAsync(nums) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const result = this.findSolution(nums);
+                resolve(result);
+            }, 0);
+        });
     }
 
     getAnswer() {
@@ -41,6 +61,7 @@ class GameModel {
                 const expressions = this.generateExpressions(numPermutation, ops);
                 for (const expr of expressions) {
                     if (this.safeEval(expr) === this.finalResult) {
+                        this.solutionFound = true;
                         return expr;
                     }
                 }
@@ -108,7 +129,7 @@ class GameModel {
         const evalScore = Math.log10(this.evalCount + 1) * 10;
         const complexityScore = multiplications * 2 + divisions * 3 + parentheses * 1.5;
         this.difficulty = Math.round(evalScore + complexityScore);
-        this.difficulty =parseInt(this.difficulty/10);
+        this.difficulty = parseInt(this.difficulty / 10);
         return this.difficulty;
     }
 }

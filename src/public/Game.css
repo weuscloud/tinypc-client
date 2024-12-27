@@ -314,8 +314,8 @@ button:hover {
 }
 
 .result-container {
-    padding: 25px;
-    height: 100px;
+    margin: 25px 0;
+    height:200px;
     border-radius: 12px;
     box-shadow: 0 0 15px var(--box-shadow-color);
 }
