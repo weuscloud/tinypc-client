@@ -4,6 +4,8 @@ class GameController {
         this.view = new GameView();
         this.settingsModel = new SettingsModel();
         this.loading = new Loading('circle', '生成卡牌中');
+
+        this.loading._percentage_enabled = false;
         this.init();
     }
 
@@ -32,6 +34,7 @@ class GameController {
     }
     async startNewGame() {
         this.loading.waitting();
+
         //view层的方法
         this.initTimer();
         this.view.clearInput();
@@ -42,10 +45,10 @@ class GameController {
        
         setTimeout(async() => {
             //model层的方法
-            const numbers = await this.model.generateNumbersAsync()
+            const numbers = await this.model.generateNumbersAsync();
+            this.loading.finish();
             this.view.displayNumbers(numbers);
             this.view.updateDifficultyDisplay(this.model.difficulty);
-            this.loading.stop();
             this.startTimer();
         }, 500);
 

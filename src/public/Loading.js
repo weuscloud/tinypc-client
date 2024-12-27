@@ -25,7 +25,7 @@ class Loading {
         return `<div class="loading-mask">
       <div class="loading-container">
       <div class="loading-${type}">${type === 'bar' ? `<div class="loading-fill-bar"></div>` : ''}</div>
-      <div class=" ${this._percentage_enabled ? 'show' : 'hide'} loading-percentage-${type}">0%</div>
+      <div class=" ${this._percentage_enabled ? 'show' : 'hide'} loading-percentage-${type}"></div>
       </div>
       <div class="loading-msg ${this._text_enabled ? 'show' : 'hide'}">${msg}...</div>
       </div>`;
@@ -52,7 +52,7 @@ class Loading {
             }
             //圆环模式为下方显示消息
             else if (this._percentage_enabled) {
-                percentageElement.textContent = `${progress}%`;
+                percentageElement.textContent = `${progress}`;
             }
         }
 
@@ -80,7 +80,7 @@ class Loading {
         }
         this._modify_classlist(this.mask, false);
     }
-    stop() {
+    finish() {
         clearInterval(this.timer);
         if (!this.mask) {
             this.init();
@@ -100,13 +100,13 @@ class Loading {
     }
     waitting() {
         clearInterval(this.timer);
-        this.progress = 10;
+        this.progress = 20;
         this.show();
         this.timer=setInterval(() => {
             if (this.progress >= 100) {
                 this.progress = 0;
             }
-            this.progress += 10;
+            this.progress += 20;
             this.setProgress(this.progress);
         }, 100)
     }
