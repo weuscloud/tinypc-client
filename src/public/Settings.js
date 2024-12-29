@@ -1,6 +1,7 @@
 const settingsModel = new SettingsModel();
 const vm = new MVVM({
   el: '#app',
+  deleteAfterCompiled:true,
   data: {
     cardCount: settingsModel.cardCount,
     maxNumber: settingsModel.maxNumber,
