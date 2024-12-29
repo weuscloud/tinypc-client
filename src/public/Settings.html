@@ -1,46 +1,54 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width = device-width, initial-scale = 1.0" />
   <title>游戏设置</title>
   <link rel="stylesheet" href="Settings.css" />
 </head>
+
 <body>
-  <!-- 菜单按钮 -->
-  <div class="menu-button" title="返回" id="menuButton">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
-  <div class="start-screen">
-    <h1>设置</h1>
-    <div class="settings">
-      <div class="slider-container">
-        <label for="cardCount">卡牌数量:</label>
-        <input type="range" id="cardCount" min="3" max="7" value="4" />
-        <span id="cardCountValue" class="span-width">4</span>
+  <div id="app">
+    <div @bind:class="fadeOutClass">
+      <!-- 菜单按钮 -->
+      <div class="menu-button" @click="backToGame" title="返回" id="menuButton">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
 
-      <div class="slider-container">
-        <label for="maxNumber">最大数字范围:</label>
-        <input type="range" id="maxNumber" min="10" max="100" step="10" value="10" />
-        <span id="maxNumberValue" class="span-width">10</span>
-      </div>
+      <div class="start-screen">
+        <h1>设置</h1>
+        <div class="settings">
+          <div class="slider-container">
+            <label for="cardCount">卡牌数量:</label>
+            <input  @model="cardCount" type="range" min="3" max="7" value="3" />
+            <span id="cardCountValue" class="span-width">{{cardCount}}</span>
+          </div>
 
-      <div class="slider-container">
-        <label for="timeLimit">作答时间:</label>
-        <input type="range" id="timeLimit" min="30" max="120" value="60" step="30" />
-        <span id="timeLimitValue" class="span-width">60</span>
+          <div class="slider-container">
+            <label for="maxNumber">最大数字范围:</label>
+            <input  @model="maxNumber" type="range" min="10" max="100" step="10" value="10" />
+            <span id="maxNumberValue" class="span-width">{{maxNumber}}</span>
+          </div>
+
+          <div class="slider-container">
+            <label for="timeLimit">作答时间:</label>
+            <input @model="timeLimit" type="range" min="30" max="120" value="60" step="30" />
+            <span id="timeLimitValue" class="span-width">{{timeLimit}}</span>
+          </div>
+        </div>
+
+        <button @click="startGame" class="new-game">开始游戏</button>
       </div>
     </div>
-
-    <button id="startGame" class="new-game">开始游戏</button>
   </div>
+
   <script src="GameDefaults.js"></script>
   <script src="SettingsModel.js"></script>
-  <script src="SettingsView.js"></script>
-  <script src="SettingsController.js"></script>
+  <script src="dom.js"></script>
+  <script src="Settings.js"></script>
 </body>
+
 </html>

@@ -18,7 +18,7 @@ class App {
                 preload: path.join(__dirname, 'preload.js')
             }
         })
-        win.loadFile('./src/public/Game.html')
+        win.loadFile('./src/public/Settings.html')
         win.removeMenu(); // 移除默认的功能菜单
 
         win.webContents.on('before-input-event', (event, input) => {

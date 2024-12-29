@@ -1,9 +1,9 @@
 class SettingsModel {
     constructor() {
         if(!SettingsModel.instance) {
-            this._getAndSetInitialValue('cardCount', GameDefaults.CARD_COUNT);
-            this._getAndSetInitialValue('maxNumber', GameDefaults.GENERATED_NUMBERS);
-            this._getAndSetInitialValue('timeLimit', GameDefaults.TIME_LIMIT);
+            this._getAndSetInitialValue('cardCount', GameDefaults.DEFAULT_CARD_COUNT);
+            this._getAndSetInitialValue('maxNumber', GameDefaults.DEFAULT_GENERATED_NUMBERS);
+            this._getAndSetInitialValue('timeLimit', GameDefaults.DEFAULT_TIME_LIMIT);
             SettingsModel.instance = this;
         }
         return SettingsModel.instance;
