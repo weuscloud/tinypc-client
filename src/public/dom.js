@@ -43,17 +43,17 @@ class Dep {
 // Watcher: 依赖订阅
 class Watcher {
     constructor(vm, key, callback) {
-        this.vm = vm;
+        this.$vm = vm;
         this.key = key;
         this.callback = callback;
 
         Dep.target = this;
-        this.vm[this.key]; // 触发依赖收集
+        this.$vm[this.key]; // 触发依赖收集
         Dep.target = null;
     }
 
     update() {
-        const newValue = this.vm[this.key];
+        const newValue = this.$vm[this.key];
         this.callback(newValue);
     }
 }
@@ -219,14 +219,14 @@ class BindDirective {
 // 数据代理类
 class DataProxy {
     constructor(vm, data) {
-        this.vm = vm;
+        this.$vm = vm;
         this.data = data;
         this.proxyData();
     }
 
     proxyData() {
         Object.keys(this.data).forEach(key => {
-            Object.defineProperty(this.vm, key, {
+            Object.defineProperty(this.$vm, key, {
                 get: () => this.data[key],
                 set: value => this.data[key] = value
             });
@@ -237,7 +237,7 @@ class DataProxy {
 // 计算属性处理类
 class ComputedProperty {
     constructor(vm, computed) {
-        this.vm = vm;
+        this.$vm = vm;
         this.computed = computed;
         this.initComputed();
     }
@@ -246,8 +246,8 @@ class ComputedProperty {
         if (!this.computed) return;
 
         Object.keys(this.computed).forEach(key => {
-            Object.defineProperty(this.vm, key, {
-                get: () => this.computed[key].call(this.vm)
+            Object.defineProperty(this.$vm, key, {
+                get: () => this.computed[key].call(this.$vm)
             });
         });
     }
@@ -297,7 +297,7 @@ class TemplateCompiler {
         const text = node.textContent;
         if (reg.test(text)) {
             const key = RegExp.$1.trim();
-            this.directiveHandler.handleText(node, this.$vm, key);
+            this.directiveHandler.handleText(node,  this.$vm, key);
         }
     }
 }
@@ -335,6 +335,12 @@ class MVVM {
         directiveHandler.registerDirective('bind', new BindDirective());
 
         new TemplateCompiler(this.$el, this, directiveHandler);
+
+        setTimeout(() => {
+            if(typeof options.created==='function'){
+                options.created.call(this);
+            }
+        }, 100);
     }
 
     initMethods() {

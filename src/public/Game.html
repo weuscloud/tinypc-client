@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,52 +8,57 @@
     <link rel="stylesheet" href="Game.css" />
     <link rel="stylesheet" href="Loading.css" />
 </head>
+
 <body>
-    <!-- 菜单按钮 -->
-    <div class="menu-button" title="设置" id="menuButton">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
+    <div id="app">
+        <!-- 菜单按钮 -->
+        <div class="menu-button" title="设置" @click="goToSettings">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
 
-    <!-- 游戏标题 -->
-    <h1 id="game-title" title="使用下方四个数字和基本运算符（+、-、*、/）使结果等于24。">赛博风格24点游戏</h1>
+        <!-- 游戏标题 -->
+        <h1 title="使用下方四个数字和基本运算符（+、-、*、/）使结果等于24。">赛博风格24点游戏</h1>
 
-    <!-- 游戏主容器，使用Flexbox布局 -->
-    <div class="container">
-        <div class="game-content">
-            <div id="numbers" class="cards"></div>
-            <div class="status-container">
-                <span>难度:</span>
-                <div class="difficulty-bar">
-                    <div id="difficulty" class="difficulty"></div>
+        <!-- 游戏主容器，使用Flexbox布局 -->
+        <div class="container">
+            <div class="game-content">
+                <div class="cards">
+                    <div @for="num in numbers" class="card">{{num}}</div>
                 </div>
-                <span id="difficulty-level" class="difficulty-level">一般</span>
+                <div class="status-container">
+                    <span>难度:</span>
+                    <div class="difficulty-bar">
+                        <div id="difficulty" class="difficulty"></div>
+                    </div>
+                    <span id="difficulty-level" class="difficulty-level">一般</span>
+                </div>
+                <div class="timer-container">
+                    <span>作答时间剩余:</span>
+                    <div id="timer" class="timer">{{timeLimit}}</div>
+                </div>
             </div>
-            <div class="timer-container">
-                <span>作答时间剩余:</span>
-                <div id="timer" class="timer">30</div>
+            <div class="input-container">
+                <input  type="text" @model="expression_noSanitize" placeholder="输入表达式" />
+                <button @click="submit">提交</button>
             </div>
-        </div>
-        <div class="input-container">
-            <input type="text" id="expression" placeholder="输入表达式" />
-            <button id="submit">提交</button>
-        </div>
-        <div class="result-container">
-            <div id="message" class="message"></div>
-            <div class="button-group">
-                <button id="answer" class="new-game button" style="display: none;">查看答案</button>
-                <button id="retry" class="new-game button" style="display: none;">重试</button>
-                <button id="new-game" class="new-game button" style="display: none;">新游戏-></button>
+            <div @class="showOrHideClass" class="result-container">
+                <div class="message">{{message}}</div>
+                <div class="button-group">
+                    <button @click="seeAnswer" class="new-game button" >查看答案</button>
+                    <button @click="retryGame" class="new-game button" >重试</button>
+                    <button @click="startNewGame" class="new-game button">新游戏-></button>
+                </div>
             </div>
         </div>
     </div>
     <script src="Loading.js"></script>
-
     <script src="GameDefaults.js"></script>
     <script src="SettingsModel.js"></script>
     <script src="GameModel.js"></script>
-    <script src="GameView.js"></script>
-    <script src="GameController.js"></script>
+    <script src="dom.js"></script>
+    <script src="GameControler.js"></script>
 </body>
+
 </html>

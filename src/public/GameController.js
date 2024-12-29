@@ -39,6 +39,7 @@ class GameController {
         this.initTimer();
         this.view.clearInput();
         this.view.clearMessage();
+        
         this.view.hideNewGameButton();
         this.view.hideAnswerButton();
         this.view.hideRetryButton();
