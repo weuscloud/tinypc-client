@@ -1,26 +1,67 @@
 // Observer: 数据劫持
 class DataObserver {
     constructor(data) {
-        return this.observe(data);
+        if (Array.isArray(data)) {
+            return this.observeArray(data); // 对数组进行特殊处理
+        } else {
+            return this.observe(data); // 对对象进行普通处理
+        }
     }
 
+    // 观察对象的属性
     observe(data) {
-        if (!data || typeof data!== 'object') return data;
+        if (!data || typeof data !== 'object') return data;
 
+        // 使用 Proxy 对象进行代理
         return new Proxy(data, {
             get: (target, key) => {
-                Dep.target && Dep.depend(key);
+                if (Dep.target) {
+                    Dep.depend(key); // 当访问属性时，收集依赖
+                }
                 const value = target[key];
-                return typeof value === 'object'? this.observe(value) : value;
+                // 如果值是对象，则递归观察
+                return typeof value === 'object' ? new DataObserver(value) : value;
             },
             set: (target, key, value) => {
-                if (target[key]!== value) {
+                const oldValue = target[key];
+                if (oldValue !== value) {
                     target[key] = value;
-                    Dep.notify(key);
+                    Dep.notify(key); // 通知视图更新
                 }
                 return true;
             }
         });
+    }
+
+    // 观察数组的方法，重写数组变异方法以便能够追踪变动
+    observeArray(array) {
+        const arrayProto = Array.prototype;
+        const proto = Object.create(arrayProto);  // 创建新原型，继承 Array 原型
+        const methodsToPatch = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
+
+        methodsToPatch.forEach(method => {
+            proto[method] = (...args) => {
+                const result = arrayProto[method].apply(array, args); // 调用原数组方法
+                args.forEach(arg => {
+                    if (typeof arg === 'object') {
+                        new DataObserver(arg); // 对新增的对象元素进行观察
+                    }
+                });
+                Dep.notify('arrayUpdate'); // 数组更新通知
+                return result;
+            };
+        });
+
+        array.__proto__ = proto; // 将数组的原型指向新的 proto
+
+        // 对已有数组元素进行递归观察
+        array.forEach(item => {
+            if (typeof item === 'object') {
+                new DataObserver(item); // 对数组项进行递归观察
+            }
+        });
+
+        return array;
     }
 }
 
@@ -28,12 +69,14 @@ class DataObserver {
 class Dep {
     static deps = new Map();
 
+    // 收集依赖
     static depend(key) {
         if (!Dep.deps.has(key)) Dep.deps.set(key, []);
         const subs = Dep.deps.get(key);
-        if (Dep.target &&!subs.includes(Dep.target)) subs.push(Dep.target);
+        if (Dep.target && !subs.includes(Dep.target)) subs.push(Dep.target);
     }
 
+    // 通知依赖更新
     static notify(key) {
         const subs = Dep.deps.get(key);
         if (subs) subs.forEach(sub => sub.update());
@@ -52,6 +95,7 @@ class Watcher {
         Dep.target = null;
     }
 
+    // 更新回调
     update() {
         const newValue = this.$vm[this.key];
         this.callback(newValue);
@@ -64,10 +108,12 @@ class DirectiveHandler {
         this.directives = {};
     }
 
+    // 注册指令
     registerDirective(name, handler) {
         this.directives[name] = handler;
     }
 
+    // 处理指令
     handle(node, vm, attrName, attrValue) {
         const [dir, event] = attrName.substring(1).split(':');
         const directive = this.directives[dir];
@@ -78,6 +124,7 @@ class DirectiveHandler {
         }
     }
 
+    // 处理文本指令
     handleText(node, vm, key) {
         const directive = this.directives['text'];
         if (directive) {
@@ -105,7 +152,6 @@ class ModelDirective {
         // dom 赋初值
         this.update(node, vm[expression]);
 
-        node['beforeChanged'] = () => { return true };
         // dom-->vm
         node.addEventListener('input', e => { vm.dataChanged(expression, e.target) });
         // vm-->dom
@@ -135,7 +181,7 @@ class ClickDirective {
     }
 }
 
-// v-if 指令
+// if 指令
 class IfDirective {
     handle(node, vm, expression) {
         const parent = node.parentNode;
@@ -169,7 +215,7 @@ class ClassDirective {
     handle(node, vm, expression) {
         const updateClass = value => {
             const staticClass = node.__staticClass || node.className || '';
-            const dynamicClass = Array.isArray(value)? value.join(' ') : value;
+            const dynamicClass = Array.isArray(value) ? value.join(' ') : value;
             node.className = `${staticClass} ${dynamicClass}`.trim();
         };
         if (!node.__staticClass) node.__staticClass = node.className;
@@ -182,7 +228,7 @@ class ClassDirective {
 class StyleDirective {
     handle(node, vm, expression) {
         const updateStyle = value => {
-            if (typeof value ==='string') {
+            if (typeof value === 'string') {
                 // 如果是字符串形式，直接赋值
                 node.style.cssText = value;
             } else if (typeof value === 'object') {
@@ -197,13 +243,86 @@ class StyleDirective {
     }
 }
 
+// for 指令
+class ForDirective {
+    handle(node, vm, expression) {
+        const [itemKey, indexKey, arrKey] = this.parseExpression(expression);
+        const parent = node.parentNode;
+        const placeholder = document.createComment('@for'); // 注释占位
+
+        const update = () => {
+            const dataArray = vm[arrKey];
+            if (!Array.isArray(dataArray)) {
+                console.error(`@for 指令绑定的数据 ${arrKey} 必须是一个数组`);
+                return;
+            }
+            let nodeArr = [];
+            let templateNode;
+
+            // 删除上次渲染的元素
+            const existingNodes = parent.querySelectorAll(`[data-for-index="${arrKey}"]`);
+            existingNodes.forEach(existingNode => {
+                parent.removeChild(existingNode);
+            });
+
+            if (node.__template) {
+                // 从内存中获取模板
+                templateNode = node.__template.cloneNode(true);
+            } else {
+                // 第一次渲染，保存模板到内存
+                templateNode = node.cloneNode(true);
+                node.__template = templateNode;
+                parent.replaceChild(placeholder, node); // 替换为注释
+            }
+
+            for (let index = 0; index < dataArray.length; index++) {
+                let cloneNode = templateNode.cloneNode(true);
+                cloneNode.dataset.forIndex = arrKey; // 添加一个自定义属性，方便后续删除
+                cloneNode.$index = index;//为元素添加一个$index属性
+                nodeArr[index] = cloneNode;
+                nodeArr[index].removeAttribute('@for');
+                this.compileText(nodeArr[index], itemKey, dataArray[index]);
+                if (typeof indexKey === 'string') {
+                    this.compileText(nodeArr[index], indexKey, index);
+                }
+            }
+
+            parent.append(...nodeArr);
+        };
+
+        update();
+        // 监听数组变更
+        new Watcher(vm, arrKey, update);
+    }
+
+    // 解析表达式: "num,index in numbers"
+    parseExpression(expression) {
+        const match = expression.match(/(\w+)(,\w+)?\s+in\s+(\w+)/);
+        if (!match) {
+            console.error(`@for 指令表达式格式错误: ${expression}`);
+            return [];
+        }
+        return [match[1], match[2], match[3]];
+    }
+
+    compileText(node, key, value) {
+        // 获取元素的innerHTML
+        let innerHTML = node.innerHTML;
+        // 使用正则表达式进行匹配和替换
+        let regex = new RegExp('{{' + key + '}}', 'g');
+        innerHTML = innerHTML.replace(regex, value);
+        // 设置替换后的innerHTML
+        node.innerHTML = innerHTML;
+    }
+}
+
 // 通用绑定指令
 class BindDirective {
     handle(node, vm, expression, attrName) {
         if (attrName === 'class') {
             const classDirective = new ClassDirective();
             classDirective.handle(node, vm, expression);
-        } else if (attrName ==='style') {
+        } else if (attrName === 'style') {
             const styleDirective = new StyleDirective();
             styleDirective.handle(node, vm, expression);
         } else {
@@ -224,6 +343,7 @@ class DataProxy {
         this.proxyData();
     }
 
+    // 代理数据访问
     proxyData() {
         Object.keys(this.data).forEach(key => {
             Object.defineProperty(this.$vm, key, {
@@ -242,6 +362,7 @@ class ComputedProperty {
         this.initComputed();
     }
 
+    // 初始化计算属性
     initComputed() {
         if (!this.computed) return;
 
@@ -256,12 +377,13 @@ class ComputedProperty {
 // 模板编译类
 class TemplateCompiler {
     constructor(el, vm, directiveHandler) {
-        this.$el = document.querySelector(el);
+        this.$el = typeof el === 'string' ? document.querySelector(el) : el;
         this.$vm = vm;
         this.directiveHandler = directiveHandler;
         this.compile(this.$el);
     }
 
+    // 编译模板
     compile(el) {
         const queue = [el];
         while (queue.length > 0) {
@@ -279,25 +401,24 @@ class TemplateCompiler {
         }
     }
 
+    // 编译元素节点
     compileElement(node) {
         [...node.attributes].forEach(attr => {
             const attrName = attr.name;
             const attrValue = attr.value;
             if (attrName.startsWith('@')) {
                 this.directiveHandler.handle(node, this.$vm, attrName, attrValue);
-                if (this.$vm.$deleteAfterCompiled) {
-                    node.removeAttribute(attrName);
-                }
             }
         });
     }
 
+    // 编译文本节点
     compileText(node) {
         const reg = /{{(.+?)}}/g;
         const text = node.textContent;
         if (reg.test(text)) {
             const key = RegExp.$1.trim();
-            this.directiveHandler.handleText(node,  this.$vm, key);
+            this.directiveHandler.handleText(node, this.$vm, key);
         }
     }
 }
@@ -309,8 +430,7 @@ class MVVM {
         this.$data = options.data;
         this.$methods = options.methods;
         this.$computed = options.computed;
-        this.$deleteAfterCompiled = options.deleteAfterCompiled;
-
+        this.$sanitized = options.sanitized || 'true';
         // 数据劫持
         this.$data = new DataObserver(this.$data);
 
@@ -333,16 +453,18 @@ class MVVM {
         directiveHandler.registerDirective('class', new ClassDirective());
         directiveHandler.registerDirective('style', new StyleDirective());
         directiveHandler.registerDirective('bind', new BindDirective());
+        directiveHandler.registerDirective('for', new ForDirective());
 
-        new TemplateCompiler(this.$el, this, directiveHandler);
+        this.$compiler = new TemplateCompiler(this.$el, this, directiveHandler);
 
         setTimeout(() => {
-            if(typeof options.created==='function'){
+            if (typeof options.created === 'function') {
                 options.created.call(this);
             }
         }, 100);
     }
 
+    // 初始化方法
     initMethods() {
         if (!this.$methods) return;
         Object.keys(this.$methods).forEach(method => {
@@ -350,13 +472,20 @@ class MVVM {
         });
     }
 
+    // 数据变更处理
     dataChanged(dataName, node) {
-        this[dataName] = this.sanitizeHTML(node.value);
+        //变量命名中如果含有nosanitized则不进行安全处理
+        if (typeof dataName === 'string' && dataName.includes('nosanitized')) {
+            this[dataName] = node.value;
+        } else {
+            this[dataName] = this.sanitizeHTML(node.value);
+        }
         if (typeof this[`${dataName}Changed`] === 'function') {
             this[`${dataName}Changed`](node.value);
         }
     }
 
+    // HTML 转义
     sanitizeHTML(html) {
         // 定义要转义的字符
         const escapeChars = {
@@ -367,7 +496,7 @@ class MVVM {
             "'": '&#039;'
         };
         // 定义要移除的危险标签
-        const dangerousTags = ['script','style', 'iframe', 'frame', 'frameset', 'object', 'embed', 'applet', 'base', 'basefont', 'link','meta', 'form'];
+        const dangerousTags = ['script', 'style', 'iframe', 'frame', 'frameset', 'object', 'embed', 'applet', 'base', 'basefont', 'link', 'meta', 'form'];
         // 定义要移除的危险属性
         const dangerousAttributes = ['onclick', 'ondblclick', 'onmousedown', 'onmouseup', 'onmouseover', 'onmousemove', 'onmouseout', 'onkeydown', 'onkeyup', 'onkeypress', 'javascript:', 'vbscript:'];
 

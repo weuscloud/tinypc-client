@@ -30,6 +30,7 @@ h1 {
     animation: neon 2s ease-in-out infinite alternate;
     position: relative;
     margin-bottom: 30px; /* 增加与下方元素的间距 */
+    text-align: center;
 }
 
 h1:hover::after {

@@ -30,9 +30,9 @@
                 <div class="status-container">
                     <span>难度:</span>
                     <div class="difficulty-bar">
-                        <div id="difficulty" class="difficulty"></div>
+                        <div @style='difficultyStyle' class="difficulty"></div>
                     </div>
-                    <span id="difficulty-level" class="difficulty-level">一般</span>
+                    <span @style="difficultyLevelDisplay" class="difficulty-level">{{difficultyLevelText}}</span>
                 </div>
                 <div class="timer-container">
                     <span>作答时间剩余:</span>
@@ -40,10 +40,10 @@
                 </div>
             </div>
             <div class="input-container">
-                <input  type="text" @model="expression_noSanitize" placeholder="输入表达式" />
+                <input  type="text" @model="expression_nosanitized" placeholder="输入表达式" />
                 <button @click="submit">提交</button>
             </div>
-            <div @class="showOrHideClass" class="result-container">
+            <div @style="resultContainerStyle" class="result-container">
                 <div class="message">{{message}}</div>
                 <div class="button-group">
                     <button @click="seeAnswer" class="new-game button" >查看答案</button>
